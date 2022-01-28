@@ -1,0 +1,139 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+
+current_names_file = open(sys.argv[1], "r").read()
+new_names_file = open(sys.argv[2], "r").read()
+
+current_names_list = [
+    name.strip() for name in current_names_file.rstrip("\n").split("\n")
+]
+new_names_list = [name.strip() for name in new_names_file.rstrip("\n").split("\n")]
+
+if len(current_names_list) != len(new_names_list):
+    print("\033[31;1mError\033[0m: Seems like some line was deleted. Aborting!")
+    raise
+
+
+def rename_chain(chain):
+    # print(chain)
+    if chain[len(chain) - 1] == chain[0]:
+        chain_0_backup = f"{chain[0]}.vimv_backup"
+        try:
+            os.rename(chain[0], chain_0_backup)
+        except OSError:
+            print(f"\033[31;1mError\033[0m: Unable to rename file {chain[0]}!")
+        chain[0] = chain_0_backup
+    for i in range(len(chain) - 1, 0, -1):
+        try:
+            os.rename(chain[i - 1], chain[i])
+        except OSError:
+            print(f"\033[31;1mError\033[0m: Unable to rename file {chain[i-1]}!")
+
+
+def exec_rename_chain(chain):
+    chain_len = len(chain)
+    last_element = chain[chain_len - 1]
+    if last_element is None:
+        if os.path.exists(chain[chain_len - 2]):
+            print("\033[31;1mWarning!!\033[0m Target name file exists!")
+            print(f"{chain[chain_len-3]} \033[32m-->\033[0m {chain[chain_len-2]}")
+            ans = input("Replace file? [y/n] ")
+            if ans == "y" or ans == "Y":
+                print("\033[34;1mNOTE\033[0m: Replacing previous file!")
+                rename_chain(chain[:-1])
+            else:
+                print("\033[34;1mNOTE\033[0m: Skipping renaming the whole chain!")
+                return
+        else:
+            rename_chain(chain[:-1])
+    elif last_element == "":
+        try:
+            os.remove(chain[chain_len - 2])
+        except OSError:
+            print(
+                f"\033[31;1mError\033[0m: Unable to delete file {chain[chain_len-1]}!"
+            )
+        rename_chain(chain[:-1])
+    elif last_element == chain[0]:
+        rename_chain(chain)
+
+
+class Node:
+    def __init__(self, chain_prev, chain_next, chain_start):
+        self.prev = chain_prev
+        self.next = chain_next
+        self.start = chain_start
+
+
+# Define a dictionary containing:
+# key -> current_name, value -> Node (object)
+renaming_dict = {}
+for i in range(len(current_names_list)):
+    current_name = current_names_list[i]
+    new_name = new_names_list[i]
+
+    if current_name in renaming_dict:
+        renaming_dict[current_name].next = new_name
+    else:
+        renaming_dict[current_name] = Node(None, new_name, current_name)
+
+    chain_start = renaming_dict[current_name].start
+    # If new_name is "" it just means that the current_name
+    # file is meant to be deleted.
+    if new_name == "":
+        continue
+    elif new_name in renaming_dict:
+        # If new_name is in renaming_dict, it must mean that it has
+        # no prev attribute, otherwise raise error as prev and current_name
+        # are trying to name it same i.e. new_name.
+        if renaming_dict[new_name].prev is not None:
+            print(
+                "\033[1;31mError\033[0m: Seems like atleast two lines are same. Aborting!"
+            )
+            raise
+        renaming_dict[new_name].prev = current_name
+        # So new_name must be at the start of a chain.
+        # In this step the start of the chain of current_name
+        # becomes the start of the concatenated chain where the current_name
+        # joins as prev of new_name.
+
+        # Now we need to change the start attribute
+        # of all the nodes following the new_name node.
+        node = current_name
+        # We are starting from current_name
+        # rather than new_name so that the loop ahead breaks immediately
+        # when the new_name is the start of the chain.
+        while True:
+            renaming_dict[node].start = chain_start
+            if (
+                renaming_dict[node].next is None
+                or renaming_dict[node].next == chain_start
+                or renaming_dict[node].next == ""
+            ):
+                break
+            node = renaming_dict[node].next
+    else:
+        renaming_dict[new_name] = Node(current_name, None, chain_start)
+
+while renaming_dict:
+    start = renaming_dict[list(renaming_dict)[0]].start
+    if start == renaming_dict[start].next:
+        del renaming_dict[start]
+        continue
+    chain = []
+    chain_element = start
+    while True:
+        chain.append(chain_element)
+        next_chain_element = renaming_dict[chain_element].next
+        del renaming_dict[chain_element]
+        if (
+            next_chain_element is None
+            or next_chain_element == start
+            or next_chain_element == ""
+        ):
+            chain.append(next_chain_element)
+            break
+        chain_element = next_chain_element
+    exec_rename_chain(chain)

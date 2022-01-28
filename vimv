@@ -1,0 +1,11 @@
+#!/bin/sh
+
+orig=$(mktemp)
+new=$(mktemp)
+
+cd "$1" || exit 1
+list=$(find "$(pwd -P)" | sed 1d)
+printf "$list" | tee $orig > $new
+$EDITOR $new
+
+vimv_backend $orig $new
