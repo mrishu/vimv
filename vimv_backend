@@ -17,7 +17,6 @@ if len(current_names_list) != len(new_names_list):
 
 
 def rename_chain(chain):
-    # print(chain)
     if chain[len(chain) - 1] == chain[0]:
         chain_0_backup = f"{chain[0]}.vimv_backup"
         try:
@@ -60,7 +59,7 @@ def exec_rename_chain(chain):
         rename_chain(chain)
 
 
-class Node:
+class ChainNode:
     def __init__(self, chain_prev, chain_next, chain_start):
         self.prev = chain_prev
         self.next = chain_next
@@ -68,43 +67,56 @@ class Node:
 
 
 # Define a dictionary containing:
-# key -> current_name, value -> Node (object)
+# key -> current_name, value -> ChainNode (object)
 renaming_dict = {}
 for i in range(len(current_names_list)):
     current_name = current_names_list[i]
     new_name = new_names_list[i]
 
+    # If 'current_name' is in 'renaming_dict', it must mean that
+    # it was the 'next' of some previous 'current_name'.
+    # It cannot have a non-None 'next' attribute from before as
+    # entries of 'current_names_list' must be unique and 'next' attribute
+    # is given only if it comes as a 'current_name'.
+    # If it isn't so, raise an error.
+    # So, 'current_name' must be at the end of a chain, as it has no 'next'.
     if current_name in renaming_dict:
+        if renaming_dict[current_name].next is not None:
+            print(
+                "\033[1;31mError\033[0m: Seems like atleast two lines in the original names file are same. Aborting!"
+            )
+            raise
         renaming_dict[current_name].next = new_name
     else:
-        renaming_dict[current_name] = Node(None, new_name, current_name)
+        renaming_dict[current_name] = ChainNode(None, new_name, current_name)
 
     chain_start = renaming_dict[current_name].start
-    # If new_name is "" it just means that the current_name
+
+    # If 'new_name' is "" it just means that the 'current_name'
     # file is meant to be deleted.
     if new_name == "":
         continue
     elif new_name in renaming_dict:
-        # If new_name is in renaming_dict, it must mean that it has
-        # no prev attribute, otherwise raise error as prev and current_name
-        # are trying to name it same i.e. new_name.
+        # If 'new_name' is in 'renaming_dict', it must mean that it has
+        # no 'prev' attribute, otherwise raise error as
+        # both 'prev' and 'current_name' are trying for same target name.
+        # So 'new_name' must be at the start of a chain, as it has no 'prev'.
         if renaming_dict[new_name].prev is not None:
             print(
-                "\033[1;31mError\033[0m: Seems like atleast two lines are same. Aborting!"
+                "\033[1;31mError\033[0m: Seems like atleast two lines in the new names file are same. Aborting!"
             )
             raise
         renaming_dict[new_name].prev = current_name
-        # So new_name must be at the start of a chain.
-        # In this step the start of the chain of current_name
-        # becomes the start of the concatenated chain where the current_name
-        # joins as prev of new_name.
 
-        # Now we need to change the start attribute
-        # of all the nodes following the new_name node.
+        # The 'start' of the chain ending with 'current_name' should now
+        # become the 'start' of the concatenated chain where the 'current_name'
+        # joins as 'prev' of 'new_name'.
+        # Hence we need to change the 'start' attribute
+        # of all the nodes following the 'new_name' node.
         node = current_name
-        # We are starting from current_name
-        # rather than new_name so that the loop ahead breaks immediately
-        # when the new_name is the start of the chain.
+        # We are starting from 'current_name'
+        # rather than 'new_name' so that the loop ahead breaks immediately
+        # in case the 'new_name' i.e. the 'next' of 'current_name' is the start of the chain.
         while True:
             renaming_dict[node].start = chain_start
             if (
@@ -115,7 +127,7 @@ for i in range(len(current_names_list)):
                 break
             node = renaming_dict[node].next
     else:
-        renaming_dict[new_name] = Node(current_name, None, chain_start)
+        renaming_dict[new_name] = ChainNode(current_name, None, chain_start)
 
 while renaming_dict:
     start = renaming_dict[list(renaming_dict)[0]].start
