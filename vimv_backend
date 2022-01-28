@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# USAGE: vimv_backend <current_names_file> <new_names_file>
+# current_names_file: a text file containing the original filenames separated by newlines
+# new_names_file: a text file containing the new filenames separated by newlines
+
 import os
 import sys
 
