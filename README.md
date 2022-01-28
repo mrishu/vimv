@@ -38,7 +38,7 @@ USAGE:
 vimv_backend $current_names_file $new_names_file
 ```
 `$current_names_file` is a text file containing the original filenames of the files which are to be renamed.  
-`new_names_file` is a text file containing the final filenames of the files which are to be renamed.  
+`$new_names_file` is a text file containing the final filenames of the files which are to be renamed.  
 
 ## `vimv`
 `vimv` is just a helper script which uses `vimv_backend` to rename files.  
