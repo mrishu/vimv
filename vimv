@@ -11,3 +11,4 @@ printf "$list" | tee $orig > $new
 $EDITOR $new
 
 vimv_backend $orig $new
+rm -f $orig $new
