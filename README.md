@@ -1,5 +1,5 @@
 # vimv
-`vimv` implementation allowing swapping filenames, chain and cyclic renaming and robust error handling.
+`vimv` implementation allowing swapping filenames, chain and cyclic renaming and error handling.
 
 ## Explained
 Few cases can arise while renaming multiple files at once:
