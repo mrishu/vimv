@@ -27,7 +27,7 @@ If the user chooses 'y' or 'Y', the rename chain is executed and file `X` is rep
 If `X` is a new filename, then rename chain is simply executed.
 
 In case (ii), the last file is deleted and rename chain is executed.  
-**NOTE**: Leave a blank space in place of filename of the file which is to be deleted. Don't delete the whole line, otherwise the script will give errors.  
+**NOTE**: Leave an empty line in place of filename of the file which is to be deleted. Don't remove the whole line, otherwise the script will give errors.  
 
 In case (iii), cyclic renaming is executed.
 
