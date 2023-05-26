@@ -5,10 +5,10 @@
 Few cases can arise while renaming multiple files at once:
 ```
 i)
-* ----> * ----> * ... * ----> X
+* ----> * ----> * ... * ----> O
 
 ii)
-* ----> * ----> * ... * ----> * (delete file)
+* ----> * ----> * ... * ----> X (delete file)
 
 iii)
 * ----> * ----> * ... * ----> *
@@ -18,13 +18,13 @@ iii)
 ```
 `*(1) ----> *(2)` means file `(1)` is renamed as file `(2)`.  
 `*` denotes a file which is listed for renaming.  
-`X` denotes a file which is not listed for renaming. `X` might be a completely new filename or might exist.  
+`O` denotes a filename which is not listed for renaming. `O` might be a completely new filename or be the name of some file that already exists.  
 
 Multiple combinations of all these cases might occur.  
 
-In case (i), if `X` is an already present filename, then a prompt comes up asking whether the user wants to replace the already present file.  
-If the user chooses 'y' or 'Y', the rename chain is executed and file `X` is replaced. Otherwise, the renaming chain is not executed.  
-If `X` is a new filename, then rename chain is simply executed.
+In case (i), if `O` is an already present filename, then a prompt comes up asking whether the user wants to replace the already present file.  
+If the user chooses 'y' or 'Y', the rename chain is executed and file `O` is replaced. Otherwise, the renaming chain is not executed.  
+If `O` is a new filename, then rename chain is simply executed.
 
 In case (ii), the last file is deleted and rename chain is executed.  
 **NOTE**: Leave an empty line in place of filename of the file which is to be deleted. Don't remove the whole line, otherwise the script will give errors.  
