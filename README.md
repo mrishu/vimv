@@ -22,9 +22,9 @@ iii)
 
 Multiple combinations of all these cases might occur.  
 
-In case (i), if `O` is an already present filename, then a prompt comes up asking whether the user wants to replace the already present file.  
-If the user chooses 'y' or 'Y', the rename chain is executed and file `O` is replaced. Otherwise, the renaming chain is not executed.  
-If `O` is a new filename, then rename chain is simply executed.
+In case (i), if `N` is an already present filename, then a prompt comes up asking whether the user wants to replace the already present file.  
+If the user chooses 'y' or 'Y', the rename chain is executed and file `N` is replaced. Otherwise, the renaming chain is not executed.  
+If `N` is a new filename, then rename chain is simply executed.
 
 In case (ii), the last file is deleted and rename chain is executed.  
 **NOTE**: Leave an empty line in place of filename of the file which is to be deleted. Don't remove the whole line, otherwise the script will give errors.  
