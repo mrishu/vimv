@@ -5,7 +5,7 @@
 Few cases can arise while renaming multiple files at once:
 ```
 i)
-* ----> * ----> * ... * ----> O
+* ----> * ----> * ... * ----> N
 
 ii)
 * ----> * ----> * ... * ----> X (delete file)
@@ -18,7 +18,7 @@ iii)
 ```
 `*(1) ----> *(2)` means file `(1)` is renamed as file `(2)`.  
 `*` denotes a file which is listed for renaming.  
-`O` denotes a filename which is not listed for renaming. `O` might be a completely new filename or be the name of some file that already exists.  
+`N` denotes a filename which is not listed for renaming. `N` might be a completely new filename or be the name of some file that already exists.  
 
 Multiple combinations of all these cases might occur.  
 
